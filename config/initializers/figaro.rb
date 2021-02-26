@@ -1,0 +1,1 @@
+Figaro.require_keys("square_api_key")
