@@ -145,16 +145,62 @@ class Api::V1::SquareController < ApplicationController
     elsif gold_result.error?
       render gold_result.errors
     end
-    pp filtered
-    puts filtered.count
+
+    results = []
+    stop = false
 
     filtered.each do |member|
-      if !User.find {|u| u.square_id === member[:square_id]}
-        newUser = User.create(email: member[:email], password: "d3vp4ss", square_id: member[:square_id], commit_count: 24)
+      currentUser = User.find {|u| u.square_id === member[:square_id]}
+      if !currentUser
+        currentUser = User.create(email: member[:email], password: "d3vp4ss", square_id: member[:square_id], commit_count: 24)
         Role.create(role_type: "member", user: newUser)
       end
-    end
 
-    render json: filtered.to_json
+      transactions = client.orders.search_orders(
+        body: {
+          location_ids: [
+            "EBB8FHQ6NBGA8"
+          ],
+          query: {
+            filter: {
+              customer_filter: {
+                customer_ids: [
+                  member[:square_id]
+                ]
+              }
+            }
+          }
+        }
+      )
+      if transactions.success?
+        t_data = []
+          transactions.data && transactions.data[0].each do |t|
+            if t[:line_items]
+              items = t[:line_items].map { |li| { uid: li[:uid], catalog_object_id: li[:catalog_object_id], 
+                quantity: li[:quantity], name: li[:name]} }
+            end
+            
+            t_obj = {
+              id: t[:id],
+              created_at: t[:created_at],
+              line_items: items,
+            }
+            t_data << t_obj
+          end
+      elsif transactions.error?
+        warn transactions.errors
+      end
+
+      results << {
+        "square": member,
+        "db": {
+          "id": currentUser.id,
+          "commit_count": currentUser.commit_count
+        },
+        "transactions": t_data
+      }
+    end
+    pp results
+    render json: results.to_json
   end
 end
