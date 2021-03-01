@@ -10,10 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_25_005315) do
+ActiveRecord::Schema.define(version: 2021_03_01_000457) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "commit_adjustments", force: :cascade do |t|
+    t.integer "adjustment"
+    t.text "note"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_commit_adjustments_on_user_id"
+  end
 
   create_table "roles", force: :cascade do |t|
     t.string "role_type"
@@ -32,5 +41,6 @@ ActiveRecord::Schema.define(version: 2021_02_25_005315) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "commit_adjustments", "users"
   add_foreign_key "roles", "users"
 end
