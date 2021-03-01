@@ -6,7 +6,7 @@ Rails.application.routes.draw do
       post '/login', to: 'auth#create'
       get '/profile', to: 'users#profile'
       get '/persist', to: 'auth#show'
-      get '/customer-groups', to: 'square#customers'
+      get '/all-customers', to: 'square#customers'
     end
   end
 end
