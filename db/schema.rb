@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_01_000457) do
+ActiveRecord::Schema.define(version: 2021_03_01_171923) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,7 @@ ActiveRecord::Schema.define(version: 2021_03_01_000457) do
     t.integer "commit_count"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["square_id"], name: "index_users_on_square_id"
   end
 
   add_foreign_key "commit_adjustments", "users"

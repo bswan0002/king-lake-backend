@@ -53,7 +53,7 @@ class Api::V1::SquareController < ApplicationController
     if result.success?
       filtered = result.data[0].map {|m| {"square_id": m[:id], "given_name": m[:given_name],
         "family_name": m[:family_name], "email": m[:email_address], "phone_number": m[:phone_number],
-        "membership_level": "platinum"} }
+        "membership_level": "Platinum"} }
       while result.cursor
         result = client.customers.search_customers(
           body: {
@@ -75,7 +75,7 @@ class Api::V1::SquareController < ApplicationController
         if result.success?
           result.data[0].each {|m| filtered << {"square_id": m[:id], "given_name": m[:given_name],
             "family_name": m[:family_name], "email": m[:email_address], "phone_number": m[:phone_number],
-            "membership_level": "platinum"} }
+            "membership_level": "Platinum"} }
         elsif result.error?
           render result.errors
         end
@@ -109,7 +109,7 @@ class Api::V1::SquareController < ApplicationController
     if gold_result.success?
       gold_result.data[0].each {|m| filtered << {"square_id": m[:id], "given_name": m[:given_name],
         "family_name": m[:family_name], "email": m[:email_address], "phone_number": m[:phone_number],
-        "membership_level": "gold"} }
+        "membership_level": "Gold"} }
       while gold_result.cursor
         gold_result = client.customers.search_customers(
           body: {
@@ -131,7 +131,7 @@ class Api::V1::SquareController < ApplicationController
         if gold_result.success?
           gold_result.data[0].each {|m| filtered << {"square_id": m[:id], "given_name": m[:given_name],
             "family_name": m[:family_name], "email": m[:email_address], "phone_number": m[:phone_number],
-            "membership_level": "gold"} }
+            "membership_level": "Gold"} }
         elsif gold_result.error?
           render gold_result.errors
         end
@@ -200,7 +200,6 @@ class Api::V1::SquareController < ApplicationController
         "transactions": t_data
       }
     end
-    pp results
     render json: results.to_json
   end
 end
