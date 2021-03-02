@@ -12,15 +12,6 @@ class Api::V1::SquareController < ApplicationController
     result = client.customers.retrieve_customer(
       customer_id: params[:id]
     )
-
-    # {
-    #   "square": member,
-    #   "db": {
-    #     "id": currentUser.id,
-    #     "commit_count": currentUser.commit_count
-    #   },
-    #   "transactions": t_data
-    # }
     
     if result.success?
       pp result.data
@@ -39,9 +30,55 @@ class Api::V1::SquareController < ApplicationController
         "phone_number": result.data[0][:phone_number],
         "membership_level": membership
       }
+
+      transactions = client.orders.search_orders(
+        body: {
+          location_ids: [
+            "EBB8FHQ6NBGA8"
+          ],
+          query: {
+            filter: {
+              customer_filter: {
+                customer_ids: [
+                  square_data[:square_id]
+                ]
+              }
+            }
+          }
+        }
+      )
+      if transactions.success?
+        t_data = []
+          transactions.data && transactions.data[0].each do |t|
+            if t[:line_items]
+              items = t[:line_items].map { |li| { uid: li[:uid], catalog_object_id: li[:catalog_object_id], 
+                quantity: li[:quantity], name: li[:name]} }
+            end
+            
+            t_obj = {
+              id: t[:id],
+              created_at: t[:created_at],
+              line_items: items,
+            }
+            t_data << t_obj
+          end
+      elsif transactions.error?
+        warn transactions.errors
+      end
+
       # look up user in our DB
       currentUser = User.find {|u| u.square_id === result.data[0][:id]}
-      byebug
+
+      member_data = {
+        "square": square_data,
+        "db": {
+          "id": currentUser.id,
+          "commit_count": currentUser.commit_count
+        },
+        "transactions": t_data
+      }
+
+      render json: member_data.to_json
     elsif result.error?
       warn result.errors
     end
