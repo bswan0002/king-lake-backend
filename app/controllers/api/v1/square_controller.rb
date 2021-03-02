@@ -1,7 +1,51 @@
 require 'square'
 
 class Api::V1::SquareController < ApplicationController
-  skip_before_action :authorized, only: [:customers]
+  skip_before_action :authorized, only: [:customers, :show]
+
+  def show
+    client = Square::Client.new(
+      access_token: Figaro.env.square_api_key,
+      environment: 'production'
+    )
+
+    result = client.customers.retrieve_customer(
+      customer_id: params[:id]
+    )
+
+    # {
+    #   "square": member,
+    #   "db": {
+    #     "id": currentUser.id,
+    #     "commit_count": currentUser.commit_count
+    #   },
+    #   "transactions": t_data
+    # }
+    
+    if result.success?
+      pp result.data
+      # determine membership level
+      if result.data[0][:groups].any? {|g| g[:name] === "Wine Club gold"}
+        membership = "Gold"
+      else
+        membership = "Platinum"
+      end
+      # organize desired data from Square response
+      square_data = {
+        "square_id": result.data[0][:id],
+        "given_name": result.data[0][:given_name],
+        "family_name": result.data[0][:family_name],
+        "email": result.data[0][:email_address],
+        "phone_number": result.data[0][:phone_number],
+        "membership_level": membership
+      }
+      # look up user in our DB
+      currentUser = User.find {|u| u.square_id === result.data[0][:id]}
+      byebug
+    elsif result.error?
+      warn result.errors
+    end
+  end
 
   def customers
     client = Square::Client.new(

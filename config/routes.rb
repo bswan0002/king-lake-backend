@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       get '/profile', to: 'users#profile'
       get '/persist', to: 'auth#show'
       get '/all-customers', to: 'square#customers'
+      get '/members/:id', to: 'square#show'
     end
   end
 end
