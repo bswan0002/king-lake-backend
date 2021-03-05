@@ -1,7 +1,32 @@
 require 'square'
 
 class Api::V1::SquareController < ApplicationController
-  skip_before_action :authorized, only: [:customers, :show]
+  skip_before_action :authorized, only: [:customers, :show, :wines]
+
+  def wines
+    client = Square::Client.new(
+      access_token: Figaro.env.square_api_key,
+      environment: 'production'
+    )
+
+    result = client.catalog.list_catalog(
+      types: "ITEM"
+    )
+    
+    if result.success?
+      wines = result.data[0].filter {|item| item[:item_data][:name].start_with?("20")}
+      wine_data = wines.map do |wine|
+        price = wine[:item_data][:variations][0][:item_variation_data][:price_money][:amount]
+        {
+          "name": wine[:item_data][:name],
+          "price": price
+        }
+      end
+      render json: wine_data.to_json
+    elsif result.error?
+      warn result.errors
+    end
+  end
 
   def show
     client = Square::Client.new(
