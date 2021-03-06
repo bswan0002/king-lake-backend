@@ -4,6 +4,9 @@ Rails.application.routes.draw do
     namespace :v1 do
       post '/signup', to: 'users#create'
       post '/login', to: 'auth#create'
+      post '/orders', to: 'orders#create'
+      get '/orders', to: 'orders#index'
+      get '/orders/:id', to: 'orders#show'
       get '/profile', to: 'users#profile'
       get '/persist', to: 'auth#show'
       get '/all-customers', to: 'square#customers'

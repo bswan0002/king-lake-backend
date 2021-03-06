@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_01_171923) do
+ActiveRecord::Schema.define(version: 2021_03_06_000031) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,26 @@ ActiveRecord::Schema.define(version: 2021_03_01_171923) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_commit_adjustments_on_user_id"
+  end
+
+  create_table "items", force: :cascade do |t|
+    t.bigint "order_id", null: false
+    t.string "wine"
+    t.integer "quantity"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["order_id"], name: "index_items_on_order_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.date "pickup_date"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.boolean "prepared"
+    t.boolean "paid_for"
+    t.boolean "picked_up"
+    t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -43,5 +63,7 @@ ActiveRecord::Schema.define(version: 2021_03_01_171923) do
   end
 
   add_foreign_key "commit_adjustments", "users"
+  add_foreign_key "items", "orders"
+  add_foreign_key "orders", "users"
   add_foreign_key "roles", "users"
 end
