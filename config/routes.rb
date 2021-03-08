@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       post '/orders', to: 'orders#create'
       get '/orders', to: 'orders#index'
       get '/orders/:id', to: 'orders#show'
+      patch '/orders/:id', to: 'orders#update'
       get '/profile', to: 'users#profile'
       get '/persist', to: 'auth#show'
       get '/all-customers', to: 'square#customers'

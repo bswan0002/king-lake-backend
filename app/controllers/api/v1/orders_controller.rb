@@ -1,5 +1,5 @@
 class Api::V1::OrdersController < ApplicationController
-  skip_before_action :authorized, only: [:create, :show, :index]
+  skip_before_action :authorized, only: [:create, :show, :index, :update]
 
   def index
     orders = Order.all
@@ -16,6 +16,13 @@ class Api::V1::OrdersController < ApplicationController
     params[:wines].values.each do |wine|
       Item.create(order: order, wine: wine[:wine], quantity: wine[:quantity])
     end
+  end
+
+  def update
+    order = Order.find(params[:id])
+    order.update(prepared: params[:prepared], paid_for: params[:paid_for],
+      picked_up: params[:picked_up])
+    render json: order
   end
 
   private
