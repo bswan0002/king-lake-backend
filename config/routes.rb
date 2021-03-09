@@ -5,6 +5,7 @@ Rails.application.routes.draw do
       post '/signup', to: 'users#create'
       post '/login', to: 'auth#create'
       post '/orders', to: 'orders#create'
+      post '/commit-adjustments', to: 'commit_adjustments#create'
       get '/orders', to: 'orders#index'
       get '/orders/:id', to: 'orders#show'
       patch '/orders/:id', to: 'orders#update'
