@@ -12,7 +12,7 @@ class Api::V1::OrdersController < ApplicationController
   end
 
   def create
-    order = Order.create(user_id: params[:user_id], prepared: false, paid_for: false, picked_up: false)
+    order = Order.create(user_id: params[:user_id], pickup_date: params[:pickup_date], prepared: false, paid_for: false, picked_up: false)
     params[:wines].values.each do |wine|
       Item.create(order: order, wine: wine[:wine], quantity: wine[:quantity])
     end

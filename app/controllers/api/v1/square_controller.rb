@@ -39,7 +39,6 @@ class Api::V1::SquareController < ApplicationController
     )
     
     if result.success?
-      pp result.data
       # determine membership level
       if result.data[0][:groups].any? {|g| g[:name] === "Wine Club gold"}
         membership = "Gold"
@@ -49,6 +48,7 @@ class Api::V1::SquareController < ApplicationController
       # organize desired data from Square response
       square_data = {
         "square_id": result.data[0][:id],
+        "created_at": result.data[0][:created_at],
         "given_name": result.data[0][:given_name],
         "family_name": result.data[0][:family_name],
         "email": result.data[0][:email_address],
@@ -98,7 +98,8 @@ class Api::V1::SquareController < ApplicationController
         "square": square_data,
         "db": {
           "id": currentUser.id,
-          "commit_count": currentUser.commit_count
+          "commit_count": currentUser.commit_count,
+          "commit_adjustments": currentUser.commit_adjustments
         },
         "transactions": t_data
       }
@@ -157,7 +158,7 @@ class Api::V1::SquareController < ApplicationController
     # result.cursor returns cursor string if there is one, else returns nil
 
     if result.success?
-      filtered = result.data[0].map {|m| {"square_id": m[:id], "given_name": m[:given_name],
+      filtered = result.data[0].map {|m| {"square_id": m[:id], "created_at": m[:created_at], "given_name": m[:given_name],
         "family_name": m[:family_name], "email": m[:email_address], "phone_number": m[:phone_number],
         "membership_level": "Platinum"} }
       while result.cursor
@@ -179,7 +180,7 @@ class Api::V1::SquareController < ApplicationController
         )
 
         if result.success?
-          result.data[0].each {|m| filtered << {"square_id": m[:id], "given_name": m[:given_name],
+          result.data[0].each {|m| filtered << {"square_id": m[:id], "created_at": m[:created_at], "given_name": m[:given_name],
             "family_name": m[:family_name], "email": m[:email_address], "phone_number": m[:phone_number],
             "membership_level": "Platinum"} }
         elsif result.error?
@@ -213,7 +214,7 @@ class Api::V1::SquareController < ApplicationController
     )
 
     if gold_result.success?
-      gold_result.data[0].each {|m| filtered << {"square_id": m[:id], "given_name": m[:given_name],
+      gold_result.data[0].each {|m| filtered << {"square_id": m[:id], "created_at": m[:created_at],  "given_name": m[:given_name],
         "family_name": m[:family_name], "email": m[:email_address], "phone_number": m[:phone_number],
         "membership_level": "Gold"} }
       while gold_result.cursor
@@ -235,7 +236,7 @@ class Api::V1::SquareController < ApplicationController
         )
 
         if gold_result.success?
-          gold_result.data[0].each {|m| filtered << {"square_id": m[:id], "given_name": m[:given_name],
+          gold_result.data[0].each {|m| filtered << {"square_id": m[:id], "created_at": m[:created_at], "given_name": m[:given_name],
             "family_name": m[:family_name], "email": m[:email_address], "phone_number": m[:phone_number],
             "membership_level": "Gold"} }
         elsif gold_result.error?
@@ -301,7 +302,8 @@ class Api::V1::SquareController < ApplicationController
         "square": member,
         "db": {
           "id": currentUser.id,
-          "commit_count": currentUser.commit_count
+          "commit_count": currentUser.commit_count,
+          "commit_adjustments": currentUser.commit_adjustments
         },
         "transactions": t_data
       }
