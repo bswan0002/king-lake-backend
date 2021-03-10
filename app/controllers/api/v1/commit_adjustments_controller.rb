@@ -14,6 +14,7 @@ class Api::V1::CommitAdjustmentsController < ApplicationController
   def create
     commit_adjustment = CommitAdjustment.create(user_id: params[:user_id], adjustment: params[:adjustment],
     note: params[:note])
+    render json: commit_adjustment
   end
 
   def destroy
