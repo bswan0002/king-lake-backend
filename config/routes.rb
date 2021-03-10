@@ -6,6 +6,8 @@ Rails.application.routes.draw do
       post '/login', to: 'auth#create'
       post '/orders', to: 'orders#create'
       post '/commit-adjustments', to: 'commit_adjustments#create'
+      post '/events', to: 'events#create'
+      get '/events', to: 'events#index'
       get '/orders', to: 'orders#index'
       get '/orders/:id', to: 'orders#show'
       patch '/orders/:id', to: 'orders#update'
