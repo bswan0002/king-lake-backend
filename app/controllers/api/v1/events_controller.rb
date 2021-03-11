@@ -14,6 +14,7 @@ class Api::V1::EventsController < ApplicationController
   def create
     event = Event.create(title: params[:title], date: params[:date],
     description: params[:description])
+    render json: event
   end
 
   private
