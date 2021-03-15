@@ -1,5 +1,5 @@
 class Api::V1::EventsController < ApplicationController
-  skip_before_action :authorized, only: [:create, :show, :index, :update]
+  skip_before_action :authorized, only: [:create, :show, :index, :update, :destroy]
 
   def index
     events = Event.all
@@ -14,6 +14,18 @@ class Api::V1::EventsController < ApplicationController
   def create
     event = Event.create(title: params[:title], date: params[:date],
     description: params[:description])
+    render json: event
+  end
+
+  def update
+    event = Event.find(params[:id])
+    event.update(title: params[:title], date: params[:date], description: params[:description])
+    render json: event
+  end
+
+  def destroy
+    event = Event.find(params[:id])
+    event.destroy
     render json: event
   end
 
