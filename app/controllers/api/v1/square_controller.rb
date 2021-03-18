@@ -259,8 +259,10 @@ class Api::V1::SquareController < ApplicationController
     filtered.each do |member|
       currentUser = User.find {|u| u.square_id === member[:square_id]}
       if !currentUser
-        currentUser = User.create(email: member[:email], password: "d3vp4ss", square_id: member[:square_id], commit_count: 24)
-        Role.create(role_type: "member", user: newUser)
+        p member[:membership_level]
+        member[:membership_level] === "Gold" ? count = 1 : count = 2
+        currentUser = User.create(email: member[:email], password: "d3vp4ss", square_id: member[:square_id], commit_count: count)
+        Role.create(role_type: "member", user_id: currentUser.id)
       end
 
       transactions = client.orders.search_orders(

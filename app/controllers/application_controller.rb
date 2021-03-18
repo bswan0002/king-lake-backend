@@ -32,7 +32,15 @@ class ApplicationController < ActionController::API
     !!current_user
   end
 
+  def admin?
+    logged_in? && current_user.roles.any? {|role| role.role_type === "admin"}
+  end
+
+  def admin_authorized
+    render json: { message: 'Only admins can do that' }, status: :unauthorized unless admin?
+  end
+
   def authorized
-      render json: { message: 'Please log in' }, status: :unauthorized unless logged_in?
+    render json: { message: 'Please log in' }, status: :unauthorized unless logged_in?
   end
 end

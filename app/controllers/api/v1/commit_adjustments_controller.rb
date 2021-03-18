@@ -1,5 +1,6 @@
 class Api::V1::CommitAdjustmentsController < ApplicationController
   skip_before_action :authorized, only: [:create, :show, :index, :update, :destroy]
+  before_action :admin_authorized, only: [:create]
 
   def index
     commit_adjustments = CommitAdjustment.all
