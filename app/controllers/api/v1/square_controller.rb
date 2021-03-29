@@ -73,11 +73,12 @@ class Api::V1::SquareController < ApplicationController
         }
       )
       if transactions.success?
+        byebug
         t_data = []
           transactions.data && transactions.data[0].each do |t|
-            if t[:line_items]
-              items = t[:line_items].map { |li| { uid: li[:uid], catalog_object_id: li[:catalog_object_id], 
-                quantity: li[:quantity], name: li[:name]} }
+            if t[:line_items] && t[:line_items].any? {|li| li[:name] && li[:name].start_with?("20")}
+              items = t[:line_items].reject{|li| !li[:name].start_with?("20")}.map { |li| { uid: li[:uid],
+                 catalog_object_id: li[:catalog_object_id], quantity: li[:quantity], name: li[:name]} }
             end
             
             t_obj = {
@@ -284,9 +285,9 @@ class Api::V1::SquareController < ApplicationController
       if transactions.success?
         t_data = []
           transactions.data && transactions.data[0].each do |t|
-            if t[:line_items]
-              items = t[:line_items].map { |li| { uid: li[:uid], catalog_object_id: li[:catalog_object_id], 
-                quantity: li[:quantity], name: li[:name]} }
+            if t[:line_items] && t[:line_items].any? {|li| li[:name] && li[:name].start_with?("20")}
+              items = t[:line_items].reject{|li| li[:name] && !li[:name].start_with?("20")}.map { |li| { uid: li[:uid],
+                 catalog_object_id: li[:catalog_object_id], quantity: li[:quantity], name: li[:name]} }
             end
             
             t_obj = {
