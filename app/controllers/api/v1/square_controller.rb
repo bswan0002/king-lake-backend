@@ -73,7 +73,7 @@ class Api::V1::SquareController < ApplicationController
         }
       )
       if transactions.success?
-        byebug
+        #byebug
         t_data = []
           transactions.data && transactions.data[0].each do |t|
             if t[:line_items] && t[:line_items].any? {|li| li[:name] && li[:name].start_with?("20")}
