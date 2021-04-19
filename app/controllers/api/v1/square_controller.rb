@@ -3,6 +3,7 @@ require 'square'
 class Api::V1::SquareController < ApplicationController
   skip_before_action :authorized, only: [:customers, :show, :wines]
 
+  # for wine list in member orders
   def wines
     client = Square::Client.new(
       access_token: Figaro.env.square_api_key,
@@ -28,6 +29,7 @@ class Api::V1::SquareController < ApplicationController
     end
   end
 
+  # for regular member login
   def show
     client = Square::Client.new(
       access_token: Figaro.env.square_api_key,
@@ -73,9 +75,10 @@ class Api::V1::SquareController < ApplicationController
         }
       )
       if transactions.success?
-        byebug
         t_data = []
           transactions.data && transactions.data[0].each do |t|
+            # logic to make sure transaction contains bottle purchase
+            # bottle line items always start with "20", e.g. "2017 Syrah"
             if t[:line_items] && t[:line_items].any? {|li| li[:name] && li[:name].start_with?("20")}
               items = t[:line_items].reject{|li| !li[:name].start_with?("20")}.map { |li| { uid: li[:uid],
                  catalog_object_id: li[:catalog_object_id], quantity: li[:quantity], name: li[:name]} }
@@ -111,6 +114,7 @@ class Api::V1::SquareController < ApplicationController
     end
   end
 
+  # for admin login, retrieve all member data
   def customers
     client = Square::Client.new(
       access_token: Figaro.env.square_api_key,
@@ -162,6 +166,9 @@ class Api::V1::SquareController < ApplicationController
       filtered = result.data[0].map {|m| {"square_id": m[:id], "created_at": m[:created_at], "given_name": m[:given_name],
         "family_name": m[:family_name], "email": m[:email_address], "phone_number": m[:phone_number],
         "membership_level": "Platinum"} }
+      # result.cursor implies the api call only retrieved
+      # subset of data, need to make subsequent calls
+      # with cursor to retrieve the rest
       while result.cursor
         result = client.customers.search_customers(
           body: {
@@ -198,6 +205,10 @@ class Api::V1::SquareController < ApplicationController
       render result.errors
     end
 
+    # Room for improvement!! Call API for both gold
+    # and plat members, then have logic to identify which
+    # group a member belongs to. This DRYs up the customer search
+    # call
     gold_result = client.customers.search_customers(
       body: {
         limit: 20,
