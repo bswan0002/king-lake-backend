@@ -120,7 +120,7 @@ GEM
     multi_json (1.15.0)
     multipart-post (2.1.1)
     nio4r (2.5.7)
-    nokogiri (1.11.3-x86_64-linux)
+    nokogiri (1.11.1-x86_64-darwin)
       racc (~> 1.4)
     pg (1.2.3)
     puma (5.2.2)
@@ -188,7 +188,6 @@ GEM
 
 PLATFORMS
   x86_64-darwin-17
-  x86_64-linux
 
 DEPENDENCIES
   active_model_serializers (~> 0.10.12)
@@ -211,4 +210,4 @@ RUBY VERSION
    ruby 2.6.1p33
 
 BUNDLED WITH
-   2.2.3
+   2.2.2

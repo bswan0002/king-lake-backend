@@ -102,7 +102,6 @@ class Api::V1::SquareController < ApplicationController
         "square": square_data,
         "db": {
           "id": currentUser.id,
-          "commit_count": currentUser.commit_count,
           "commit_adjustments": currentUser.commit_adjustments
         },
         "transactions": t_data
@@ -273,8 +272,11 @@ class Api::V1::SquareController < ApplicationController
       if !currentUser
         p member[:membership_level]
         member[:membership_level] === "Gold" ? count = 1 : count = 2
-        currentUser = User.create(email: member[:email], password: "d3vp4ss", square_id: member[:square_id], commit_count: count)
+        p signup_month = DateTime.rfc3339(member[:created_at]).change( { day: 1, hour: 0 } )
+        months = ((Time.now - signup_month)/2628000).ceil
+        currentUser = User.create(email: member[:email], square_id: member[:square_id])
         Role.create(role_type: "member", user_id: currentUser.id)
+        CommitAdjustment.create(adjustment: count * months * -1, user_id: currentUser.id, note: "Initial adjustment")
       end
 
       transactions = client.orders.search_orders(
@@ -316,7 +318,6 @@ class Api::V1::SquareController < ApplicationController
         "square": member,
         "db": {
           "id": currentUser.id,
-          "commit_count": currentUser.commit_count,
           "commit_adjustments": currentUser.commit_adjustments
         },
         "transactions": t_data
