@@ -63,4 +63,18 @@ Rails.application.configure do
 
   # Uncomment if you wish to allow Action Cable access from any origin.
   # config.action_cable.disable_request_forgery_protection = true
+
+  #email
+  config.action_mailer.delivery_method = :smtp
+  host = 'locahlhost:3000'
+  config.action_mailer.default_url_options = { :host => 'localhost:3000', protocol: 'http' }
+
+  config.action_mailer.smtp_settings = {
+    :address              => "smtp.gmail.com",
+    :port                 => 587,
+    :user_name            => "lukenochetti@gmail.com",
+    :password             => Figaro.env.luke_email_password,
+    :authentication       => "plain",
+    :enable_starttls_auto => true
+  }
 end

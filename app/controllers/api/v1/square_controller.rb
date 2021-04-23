@@ -275,6 +275,7 @@ class Api::V1::SquareController < ApplicationController
         p signup_month = DateTime.rfc3339(member[:created_at]).change( { day: 1, hour: 0 } )
         months = ((Time.now - signup_month)/2628000).ceil
         currentUser = User.create(email: member[:email], square_id: member[:square_id])
+        UserMailer.with(user: currentUser.email).welcome_email.deliver_later
         Role.create(role_type: "member", user_id: currentUser.id)
         CommitAdjustment.create(adjustment: count * months * -1, user_id: currentUser.id, note: "Initial adjustment")
       end
